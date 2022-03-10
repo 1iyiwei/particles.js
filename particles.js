@@ -1284,7 +1284,7 @@ const pJS = function(tag_id, params) {
     // if shape is image
     if (pJS.particles.shape.type == 'image') {
       if (pJS.tmp.img_type == 'svg' && pJS.tmp.source_svg == undefined) {
-        pJS.tmp.checkAnimFrame = window.requestAnimFrame(check);
+        console.warn('pJS.tmp.checkAnimFrame = window.requestAnimFrame(check)');
       } else {
         // console.log('images loaded! cancel check');
         window.cancelRequestAnimFrame(pJS.tmp.checkAnimFrame);
