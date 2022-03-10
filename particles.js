@@ -448,8 +448,8 @@ const pJS = function(tag_id, params) {
         break;
 
       case 'image':
-
-        function draw() {
+        {
+        const draw = function() {
           pJS.canvas.ctx.drawImage(
               img_obj,
               p.x-radius,
@@ -459,16 +459,17 @@ const pJS = function(tag_id, params) {
           );
         }
 
+        let img_obj = null;
         if (pJS.tmp.img_type == 'svg') {
-          const img_obj = p.img.obj;
+          img_obj = p.img.obj;
         } else {
-          const img_obj = pJS.tmp.img_obj;
+          img_obj = pJS.tmp.img_obj;
         }
 
         if (img_obj) {
           draw();
         }
-
+      }
         break;
     }
 
@@ -652,8 +653,8 @@ const pJS = function(tag_id, params) {
 
   pJS.fn.particlesRefresh = function() {
     /* init all */
-    cancelRequestAnimFrame(pJS.fn.checkAnimFrame);
-    cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
+    window.cancelRequestAnimFrame(pJS.fn.checkAnimFrame);
+    window.cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
     pJS.tmp.source_svg = undefined;
     pJS.tmp.img_obj = undefined;
     pJS.tmp.count_svg = 0;
@@ -771,7 +772,7 @@ const pJS = function(tag_id, params) {
       const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
       const ratio = 1 - dist_mouse / pJS.interactivity.modes.bubble.distance;
 
-      function init() {
+      const init = function() {
         p.opacity_bubble = p.opacity;
         p.radius_bubble = p.radius;
       }
@@ -825,12 +826,12 @@ const pJS = function(tag_id, params) {
 
     /* on click event */
     else if (pJS.interactivity.events.onclick.enable && isInArray('bubble', pJS.interactivity.events.onclick.mode)) {
-      if (pJS.tmp.bubble_clicking) {
         const dx_mouse = p.x - pJS.interactivity.mouse.click_pos_x;
         const dy_mouse = p.y - pJS.interactivity.mouse.click_pos_y;
         const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
         const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time)/1000;
 
+        if (pJS.tmp.bubble_clicking) {
         if (time_spent > pJS.interactivity.modes.bubble.duration) {
           pJS.tmp.bubble_duration_end = true;
         }
@@ -842,14 +843,15 @@ const pJS = function(tag_id, params) {
       }
 
 
-      function process(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
+      const process = function(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
         if (bubble_param != particles_param) {
           if (!pJS.tmp.bubble_duration_end) {
             if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
+              let obj = null;
               if (p_obj_bubble != undefined) {
-                const obj = p_obj_bubble;
+                obj = p_obj_bubble;
               } else {
-                const obj = p_obj;
+                obj = p_obj;
               }
               if (obj != bubble_param) {
                 const value = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
@@ -872,7 +874,7 @@ const pJS = function(tag_id, params) {
             if (p_obj_bubble != undefined) {
               const value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
               const dif = bubble_param - value_tmp;
-              value = bubble_param + dif;
+              const value = bubble_param + dif;
               if (id == 'size') {
                 p.radius_bubble = value;
               }
@@ -938,7 +940,7 @@ const pJS = function(tag_id, params) {
 
         const force = -repulseRadius / d * 1;
 
-        function process() {
+        const process = function() {
           const f = Math.atan2(dy, dx);
           p.vx = force * Math.cos(f);
           p.vy = force * Math.sin(f);
@@ -1051,7 +1053,7 @@ const pJS = function(tag_id, params) {
       });
 
       /* el on onmouseleave */
-      pJS.interactivity.el.addEventListener('mouseleave', function(e) {
+      pJS.interactivity.el.addEventListener('mouseleave', function(/*e*/){
         pJS.interactivity.mouse.pos_x = null;
         pJS.interactivity.mouse.pos_y = null;
         pJS.interactivity.status = 'mouseleave';
@@ -1144,11 +1146,12 @@ const pJS = function(tag_id, params) {
     /* set color to svg element */
     const svgXml = pJS.tmp.source_svg;
     const rgbHex = /#([0-9A-F]{3,6})/gi;
-    const coloredSvgXml = svgXml.replace(rgbHex, function(m, r, g, b) {
+    const coloredSvgXml = svgXml.replace(rgbHex, function(/*m, r, g, b*/) {
+      let color_value = null;
       if (p.color.rgb) {
-        const color_value = 'rgba('+p.color.rgb.r+','+p.color.rgb.g+','+p.color.rgb.b+','+p.opacity+')';
+        color_value = 'rgba('+p.color.rgb.r+','+p.color.rgb.g+','+p.color.rgb.b+','+p.opacity+')';
       } else {
-        const color_value = 'hsla('+p.color.hsl.h+','+p.color.hsl.s+'%,'+p.color.hsl.l+'%,'+p.opacity+')';
+        color_value = 'hsla('+p.color.hsl.h+','+p.color.hsl.s+'%,'+p.color.hsl.l+'%,'+p.opacity+')';
       }
       return color_value;
     });
@@ -1173,7 +1176,7 @@ const pJS = function(tag_id, params) {
   pJS.fn.vendors.destroypJS = function() {
     cancelAnimationFrame(pJS.fn.drawAnimFrame);
     canvas_el.remove();
-    pJSDom = null;
+    window.pJSDom = null;
   };
 
 
@@ -1242,36 +1245,36 @@ const pJS = function(tag_id, params) {
         if (pJS.tmp.count_svg >= pJS.particles.number.value) {
           pJS.fn.particlesDraw();
           if (!pJS.particles.move.enable) {
-            cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
+            window.cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
           } else {
-            pJS.fn.drawAnimFrame = requestAnimFrame(pJS.fn.vendors.draw);
+            pJS.fn.drawAnimFrame = window.requestAnimFrame(pJS.fn.vendors.draw);
           }
         } else {
           // console.log('still loading...');
           if (!pJS.tmp.img_error) {
-            pJS.fn.drawAnimFrame = requestAnimFrame(pJS.fn.vendors.draw);
+            pJS.fn.drawAnimFrame = window.requestAnimFrame(pJS.fn.vendors.draw);
           }
         }
       } else {
         if (pJS.tmp.img_obj != undefined) {
           pJS.fn.particlesDraw();
           if (!pJS.particles.move.enable) {
-            cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
+            window.cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
           } else {
-            pJS.fn.drawAnimFrame = requestAnimFrame(pJS.fn.vendors.draw);
+            pJS.fn.drawAnimFrame = window.requestAnimFrame(pJS.fn.vendors.draw);
           }
         } else {
           if (!pJS.tmp.img_error) {
-            pJS.fn.drawAnimFrame = requestAnimFrame(pJS.fn.vendors.draw);
+            pJS.fn.drawAnimFrame = window.requestAnimFrame(pJS.fn.vendors.draw);
           }
         }
       }
     } else {
       pJS.fn.particlesDraw();
       if (!pJS.particles.move.enable) {
-        cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
+        window.cancelRequestAnimFrame(pJS.fn.drawAnimFrame);
       } else {
-        pJS.fn.drawAnimFrame = requestAnimFrame(pJS.fn.vendors.draw);
+        pJS.fn.drawAnimFrame = window.requestAnimFrame(pJS.fn.vendors.draw);
       }
     }
   };
@@ -1281,10 +1284,10 @@ const pJS = function(tag_id, params) {
     // if shape is image
     if (pJS.particles.shape.type == 'image') {
       if (pJS.tmp.img_type == 'svg' && pJS.tmp.source_svg == undefined) {
-        pJS.tmp.checkAnimFrame = requestAnimFrame(check);
+        pJS.tmp.checkAnimFrame = window.requestAnimFrame(check);
       } else {
         // console.log('images loaded! cancel check');
-        cancelRequestAnimFrame(pJS.tmp.checkAnimFrame);
+        window.cancelRequestAnimFrame(pJS.tmp.checkAnimFrame);
         if (!pJS.tmp.img_error) {
           pJS.fn.vendors.init();
           pJS.fn.vendors.draw();
@@ -1431,7 +1434,7 @@ window.particlesJS = function(tag_id, params) {
 
   /* launch particle.js */
   if (canvas != null) {
-    pJSDom.push(new pJS(tag_id, params));
+    window.pJSDom.push(new pJS(tag_id, params));
   }
 };
 
