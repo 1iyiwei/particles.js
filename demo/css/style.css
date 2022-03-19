@@ -85,12 +85,20 @@ canvas{
 
 /* ---- particles.js container ---- */
 
-#particles-js{
+#snow-particles{
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+}
+
+#constellation-particles{
   width: 100%;
   height: 100%;
   background-color: #b61924;
   background-image: url('');
   background-size: cover;
-  background-position: 50% 50%;
+  background-position: center;
   background-repeat: no-repeat;
 }
