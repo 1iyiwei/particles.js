@@ -7,7 +7,7 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-const pJS = function(tag_id, params) {
+const pJSEngine = function(tag_id, params) {
   const canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
 
   /* particles.js variables with default values */
@@ -1330,7 +1330,7 @@ const pJS = function(tag_id, params) {
   pJS.fn.vendors.eventsListeners();
 
   pJS.fn.vendors.start();
-};
+}; // pJSEngine
 
 /* ---------- global functions - vendors ------------ */
 
@@ -1394,7 +1394,7 @@ function isInArray(value, array) {
 /* ---------- particles.js functions - start ------------ */
 
 window.pJSDom = [];
-window.pJSDomID = [];
+window.pJSCanvas = [];
 
 window.particlesJS = function(tag_id, params) {
   // console.log(params);
@@ -1435,8 +1435,8 @@ window.particlesJS = function(tag_id, params) {
 
   /* launch particle.js */
   if (canvas != null) {
-    window.pJSDom.push(new pJS(tag_id, params));
-    window.pJSDomID.push(tag_id);
+    window.pJSDom.push(new pJSEngine(tag_id, params));
+    window.pJSCanvas.push(canvas);
   }
 };
 

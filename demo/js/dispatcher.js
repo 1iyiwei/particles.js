@@ -1,10 +1,7 @@
 
 function dispatch(e)
 {
-    console.log(window.pJSDomID);
-    const receivers = document.getElementsByClassName('particles');
-
-    for(const receiver of receivers)
+    for(const receiver of window.pJSCanvas)
     {
         let eCopy = new MouseEvent(e.type, e);
         receiver.dispatchEvent(eCopy);
