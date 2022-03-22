@@ -459,7 +459,7 @@ particlesJS.Engine = function(tag_id, params) {
               radius*2,
               radius*2 / p.img.ratio,
           );
-        }
+        };
 
         let img_obj = null;
         if (pJS.tmp.img_type == 'svg') {
@@ -777,7 +777,7 @@ particlesJS.Engine = function(tag_id, params) {
       const init = function() {
         p.opacity_bubble = p.opacity;
         p.radius_bubble = p.radius;
-      }
+      };
 
       /* mousemove - check ratio */
       if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
@@ -886,7 +886,7 @@ particlesJS.Engine = function(tag_id, params) {
             }
           }
         }
-      }
+      };
 
       if (pJS.tmp.bubble_clicking) {
         /* size */
@@ -963,7 +963,7 @@ particlesJS.Engine = function(tag_id, params) {
               p.vy = -p.vy;
             }
           }
-        }
+        };
 
         // default
         if (d <= repulseRadius) {
@@ -1405,7 +1405,7 @@ particlesJS.dispatchMouseEvent = function(e)
         let eCopy = new MouseEvent(e.type, e);
         receiver.dispatchEvent(eCopy);
     }
-}
+};
 
 particlesJS.build = function(tag_id, params) {
   // console.log(params);
