@@ -1,6 +1,7 @@
 
 function dispatch(e)
 {
+    console.log(window.pJSDomID);
     const receivers = document.getElementsByClassName('particles');
 
     for(const receiver of receivers)

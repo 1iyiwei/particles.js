@@ -1394,6 +1394,7 @@ function isInArray(value, array) {
 /* ---------- particles.js functions - start ------------ */
 
 window.pJSDom = [];
+window.pJSDomID = [];
 
 window.particlesJS = function(tag_id, params) {
   // console.log(params);
@@ -1435,6 +1436,7 @@ window.particlesJS = function(tag_id, params) {
   /* launch particle.js */
   if (canvas != null) {
     window.pJSDom.push(new pJS(tag_id, params));
+    window.pJSDomID.push(tag_id);
   }
 };
 
