@@ -7,7 +7,7 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-particlesJS = {};
+let particlesJS = {};
 
 particlesJS.Engine = function(tag_id, params) {
   const canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
