@@ -1,14 +1,8 @@
 
-function dispatch(e)
-{
-    for(const receiver of window.pJSCanvas)
-    {
-        let eCopy = new MouseEvent(e.type, e);
-        receiver.dispatchEvent(eCopy);
-    }
-}
-
 const dispatcher = document.getElementById('dispatcher');
 
-dispatcher.addEventListener("mousemove", dispatch);
-dispatcher.addEventListener("click", dispatch);
+const pJSMouseEvents = ["mousemove", "mouseleave", "click"];
+for(const event of pJSMouseEvents)
+{
+    dispatcher.addEventListener(event, particlesJS.dispatchMouseEvent);
+}

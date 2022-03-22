@@ -1,6 +1,6 @@
 //https://github.com/VincentGarreau/particles.js/
 
-particlesJS("snow-particles", {
+particlesJS.build("snow-particles", {
     "particles": {
       "number": {
         "value": 400,

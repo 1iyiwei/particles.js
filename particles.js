@@ -7,7 +7,9 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-const pJSEngine = function(tag_id, params) {
+particlesJS = {};
+
+particlesJS.Engine = function(tag_id, params) {
   const canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
 
   /* particles.js variables with default values */
@@ -1330,7 +1332,7 @@ const pJSEngine = function(tag_id, params) {
   pJS.fn.vendors.eventsListeners();
 
   pJS.fn.vendors.start();
-}; // pJSEngine
+}; // particlesJS.Engine
 
 /* ---------- global functions - vendors ------------ */
 
@@ -1394,9 +1396,18 @@ function isInArray(value, array) {
 /* ---------- particles.js functions - start ------------ */
 
 window.pJSDom = [];
-window.pJSCanvas = [];
+particlesJS.canvas = [];
 
-window.particlesJS = function(tag_id, params) {
+particlesJS.dispatchMouseEvent = function(e)
+{
+    for(const receiver of particlesJS.canvas)
+    {
+        let eCopy = new MouseEvent(e.type, e);
+        receiver.dispatchEvent(eCopy);
+    }
+}
+
+particlesJS.build = function(tag_id, params) {
   // console.log(params);
 
   /* no string id? so it's object params, and set the id with default id */
@@ -1435,12 +1446,12 @@ window.particlesJS = function(tag_id, params) {
 
   /* launch particle.js */
   if (canvas != null) {
-    window.pJSDom.push(new pJSEngine(tag_id, params));
-    window.pJSCanvas.push(canvas);
+    window.pJSDom.push(new particlesJS.Engine(tag_id, params));
+    particlesJS.canvas.push(canvas);
   }
 };
 
-window.particlesJS.load = function(tag_id, path_config_json, callback) {
+particlesJS.load = function(tag_id, path_config_json, callback) {
   /* load json config */
   const xhr = new XMLHttpRequest();
   xhr.open('GET', path_config_json);
@@ -1448,7 +1459,7 @@ window.particlesJS.load = function(tag_id, path_config_json, callback) {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
         const params = JSON.parse(data.currentTarget.response);
-        window.particlesJS(tag_id, params);
+        particlesJS.build(tag_id, params);
         if (callback) {
           callback();
         }
