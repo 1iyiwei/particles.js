@@ -7,7 +7,7 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-const pJS = function(tag_id, params) {
+const pJSEngine = function(tag_id, params) {
   const canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
 
   /* particles.js variables with default values */
@@ -1330,7 +1330,7 @@ const pJS = function(tag_id, params) {
   pJS.fn.vendors.eventsListeners();
 
   pJS.fn.vendors.start();
-};
+}; // pJSEngine
 
 /* ---------- global functions - vendors ------------ */
 
@@ -1434,7 +1434,7 @@ window.particlesJS = function(tag_id, params) {
 
   /* launch particle.js */
   if (canvas != null) {
-    window.pJSDom.push(new pJS(tag_id, params));
+    window.pJSDom.push(new pJSEngine(tag_id, params));
   }
 };
 
