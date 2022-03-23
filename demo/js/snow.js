@@ -22,7 +22,7 @@ particlesJS.build("snow-particles", {
           "nb_sides": 5
         },
         "image": {
-          "src": "http://www.dynamicdigital.us/wp-content/uploads/2013/02/starburst_white_300_drop_2.png",
+          "src": "https://www.dynamicdigital.us/wp-content/uploads/2013/02/starburst_white_300_drop_2.png",
           "width": 100,
           "height": 100
         }
