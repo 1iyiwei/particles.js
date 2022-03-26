@@ -99,6 +99,14 @@ particlesJS.Engine = function(tag_id, params) {
           enable: true,
           mode: 'push',
         },
+        onlefthand: {
+          enable: false,
+          mode: 'repulse',
+        },
+        onrighthand: {
+          enable: false,
+          mode: 'bubble',
+        },
         resize: true,
       },
       modes: {
@@ -493,7 +501,8 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
-  pJS.fn.particlesUpdate = function() {
+  pJS.fn.particlesUpdate = function()
+  {
     for (let i = 0; i < pJS.particles.array.length; i++) {
       /* the particle */
       const p = pJS.particles.array[i];
@@ -599,16 +608,9 @@ particlesJS.Engine = function(tag_id, params) {
       }
 
       /* events */
-      if (isInArray('grab', pJS.interactivity.events.onhover.mode)) {
-        pJS.fn.modes.grabParticle(p);
-      }
-
-      if (isInArray('bubble', pJS.interactivity.events.onhover.mode) || isInArray('bubble', pJS.interactivity.events.onclick.mode)) {
-        pJS.fn.modes.bubbleParticle(p);
-      }
-
-      if (isInArray('repulse', pJS.interactivity.events.onhover.mode) || isInArray('repulse', pJS.interactivity.events.onclick.mode)) {
-        pJS.fn.modes.repulseParticle(p);
+      for (const [effectType, effectFunc] of Object.entries(effectNameFuncPairs))
+      {
+        effectFunc(p);
       }
 
       /* interaction auto between particles */
@@ -765,69 +767,113 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
+  function bubbleParticleMove(p, activeStatus, leaveStatus)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const ratio = 1 - dist_mouse / pJS.interactivity.modes.bubble.distance;
 
-  pJS.fn.modes.bubbleParticle = function(p) {
-    /* on hover event */
-    if (pJS.interactivity.events.onhover.enable && isInArray('bubble', pJS.interactivity.events.onhover.mode)) {
-      const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-      const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-      const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-      const ratio = 1 - dist_mouse / pJS.interactivity.modes.bubble.distance;
+    let initialState = false;
 
-      const init = function() {
-        p.opacity_bubble = p.opacity;
-        p.radius_bubble = p.radius;
-      };
+    const init = function() {
+      p.opacity_bubble = p.opacity;
+      p.radius_bubble = p.radius;
+      initialState = true;
+    };
 
-      /* mousemove - check ratio */
-      if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
-        if (ratio >= 0 && pJS.interactivity.status == 'mousemove') {
-          /* size */
-          if (pJS.interactivity.modes.bubble.size != pJS.particles.size.value) {
-            if (pJS.interactivity.modes.bubble.size > pJS.particles.size.value) {
-              const size = p.radius + (pJS.interactivity.modes.bubble.size*ratio);
-              if (size >= 0) {
-                p.radius_bubble = size;
-              }
-            } else {
-              const dif = p.radius - pJS.interactivity.modes.bubble.size;
-              const size = p.radius - (dif*ratio);
-              if (size > 0) {
-                p.radius_bubble = size;
-              } else {
-                p.radius_bubble = 0;
-              }
+    /* mousemove - check ratio */
+    if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
+      if (ratio >= 0 && pJS.interactivity.status == activeStatus) {
+        /* size */
+        if (pJS.interactivity.modes.bubble.size != pJS.particles.size.value) {
+          if (pJS.interactivity.modes.bubble.size > pJS.particles.size.value) {
+            const size = p.radius + (pJS.interactivity.modes.bubble.size*ratio);
+            if (size >= 0) {
+              p.radius_bubble = size;
             }
-          }
-
-          /* opacity */
-          if (pJS.interactivity.modes.bubble.opacity != pJS.particles.opacity.value) {
-            if (pJS.interactivity.modes.bubble.opacity > pJS.particles.opacity.value) {
-              const opacity = pJS.interactivity.modes.bubble.opacity*ratio;
-              if (opacity > p.opacity && opacity <= pJS.interactivity.modes.bubble.opacity) {
-                p.opacity_bubble = opacity;
-              }
+          } else {
+            const dif = p.radius - pJS.interactivity.modes.bubble.size;
+            const size = p.radius - (dif*ratio);
+            if (size > 0) {
+              p.radius_bubble = size;
             } else {
-              const opacity = p.opacity - (pJS.particles.opacity.value-pJS.interactivity.modes.bubble.opacity)*ratio;
-              if (opacity < p.opacity && opacity >= pJS.interactivity.modes.bubble.opacity) {
-                p.opacity_bubble = opacity;
-              }
+              p.radius_bubble = 0;
             }
           }
         }
-      } else {
-        init();
-      }
 
-
-      /* mouseleave */
-      if (pJS.interactivity.status == 'mouseleave') {
-        init();
+        /* opacity */
+        if (pJS.interactivity.modes.bubble.opacity != pJS.particles.opacity.value) {
+          if (pJS.interactivity.modes.bubble.opacity > pJS.particles.opacity.value) {
+            const opacity = pJS.interactivity.modes.bubble.opacity*ratio;
+            if (opacity > p.opacity && opacity <= pJS.interactivity.modes.bubble.opacity) {
+              p.opacity_bubble = opacity;
+            }
+          } else {
+            const opacity = p.opacity - (pJS.particles.opacity.value-pJS.interactivity.modes.bubble.opacity)*ratio;
+            if (opacity < p.opacity && opacity >= pJS.interactivity.modes.bubble.opacity) {
+              p.opacity_bubble = opacity;
+            }
+          }
+        }
       }
+    } else {
+      init();
     }
 
+    /* mouseleave */
+    if (pJS.interactivity.status == leaveStatus) {
+      init();
+    }
+
+    return initialState;
+  }
+
+  function enableEventEffect(event, effect)
+  {
+    const onEvent = 'on'+event;
+    return (pJS.interactivity.events[onEvent].enable && isInArray(effect, pJS.interactivity.events[onEvent].mode));
+  }
+  
+  function enableStatusEvent(status, event)
+  {
+    return (pJS.interactivity.events['on'+event].enable && pJS.interactivity.status == status);
+  }
+
+  function enableStatusEventEffect(status, event, effect)
+  {
+    // return (pJS.interactivity.status == status) && enableEventEffect(event, effect);
+    return enableStatusEvent(status, event) && isInArray(effect, pJS.interactivity.events['on'+event].mode);
+  }
+
+  function enableMoveEffect(effect)
+  {
+    const answer = 
+    enableStatusEventEffect('mousemove', 'hover', effect) 
+    || enableStatusEventEffect('lefthand', 'lefthand', effect)
+    || enableStatusEventEffect('righthand', 'righthand', effect);
+    return answer;
+  }
+
+  pJS.fn.modes.bubbleParticle = function(p) 
+  {
+    /* on hover event */
+    if (enableStatusEventEffect('lefthand', 'lefthand', 'bubble'))
+    {
+      bubbleParticleMove(p, 'lefthand', 'lefthandleave');
+    }
+    else if (enableStatusEventEffect('righthand', 'righthand', 'bubble'))
+    {
+      bubbleParticleMove(p, 'righthand', 'righthandleave');
+    }
+    else if (enableEventEffect('hover', 'bubble'))
+    {
+      bubbleParticleMove(p, 'mousemove', 'mouseleave');
+    }
     /* on click event */
-    else if (pJS.interactivity.events.onclick.enable && isInArray('bubble', pJS.interactivity.events.onclick.mode)) {
+    else if (enableEventEffect('click', 'bubble')) 
+    {
         const dx_mouse = p.x - pJS.interactivity.mouse.click_pos_x;
         const dy_mouse = p.y - pJS.interactivity.mouse.click_pos_y;
         const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
@@ -843,7 +889,6 @@ particlesJS.Engine = function(tag_id, params) {
           pJS.tmp.bubble_duration_end = false;
         }
       }
-
 
       const process = function(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
         if (bubble_param != particles_param) {
@@ -897,9 +942,10 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
-
-  pJS.fn.modes.repulseParticle = function(p) {
-    if (pJS.interactivity.events.onhover.enable && isInArray('repulse', pJS.interactivity.events.onhover.mode) && pJS.interactivity.status == 'mousemove') {
+  pJS.fn.modes.repulseParticle = function(p)
+  {
+    if (enableMoveEffect('repulse'))
+    {
       const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
       const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
       const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
@@ -987,9 +1033,10 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
-
-  pJS.fn.modes.grabParticle = function(p) {
-    if (pJS.interactivity.events.onhover.enable && pJS.interactivity.status == 'mousemove') {
+ pJS.fn.modes.grabParticle = function(p)
+ {
+    if(enableMoveEffect('grab'))
+    {
       const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
       const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
       const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
@@ -1016,9 +1063,17 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
+  /* ---------- link custom effect(s) here ------------ */
+
+  let effectNameFuncPairs = 
+  {
+    'bubble': pJS.fn.modes.bubbleParticle, 
+    'repulse': pJS.fn.modes.repulseParticle,
+    'grab': pJS.fn.modes.grabParticle
+};
 
   /* ---------- pJS functions - vendors ------------ */
-
+  
   pJS.fn.vendors.eventsListeners = function() {
     /* events target element */
     if (pJS.interactivity.detect_on == 'window') {
@@ -1027,32 +1082,61 @@ particlesJS.Engine = function(tag_id, params) {
       pJS.interactivity.el = pJS.canvas.el;
     }
 
+    const computeCoord = function(e)
+    {
+      let pos_x = 0;
+      let pos_y = 0;
+
+      if (pJS.interactivity.el == window)
+      {
+        pos_x = e.clientX,
+        pos_y = e.clientY;
+      } 
+      else
+      {
+        pos_x = e.offsetX || e.clientX,
+        pos_y = e.offsetY || e.clientY;
+      }
+
+      return {x: pos_x, y: pos_y};
+    };
+
+    const addPointerEventListener = function(type, target)
+    {
+      pJS.interactivity.el.addEventListener(type,
+      function(e) 
+      {
+        const coord = computeCoord(e);
+        const pos_x = coord.x;
+        const pos_y = coord.y;
+
+        target.pos_x = pos_x;
+        target.pos_y = pos_y;
+
+        if (pJS.tmp.retina) {
+          target.pos_x *= pJS.canvas.pxratio;
+          target.pos_y *= pJS.canvas.pxratio;
+        }
+
+        pJS.interactivity.status = type;
+      }
+      );
+    }
+
+    if (pJS.interactivity.events.onlefthand.enable) 
+    {
+      addPointerEventListener('lefthand', pJS.interactivity.mouse);
+    }
+
+    if (pJS.interactivity.events.onrighthand.enable) 
+    {
+      addPointerEventListener('righthand', pJS.interactivity.mouse);
+    }
 
     /* detect mouse pos - on hover / click event */
     if (pJS.interactivity.events.onhover.enable || pJS.interactivity.events.onclick.enable) {
       /* el on mousemove */
-      pJS.interactivity.el.addEventListener('mousemove', function(e) {
-        let pos_x = 0;
-        let pos_y = 0;
-
-        if (pJS.interactivity.el == window) {
-          pos_x = e.clientX,
-          pos_y = e.clientY;
-        } else {
-          pos_x = e.offsetX || e.clientX,
-          pos_y = e.offsetY || e.clientY;
-        }
-
-        pJS.interactivity.mouse.pos_x = pos_x;
-        pJS.interactivity.mouse.pos_y = pos_y;
-
-        if (pJS.tmp.retina) {
-          pJS.interactivity.mouse.pos_x *= pJS.canvas.pxratio;
-          pJS.interactivity.mouse.pos_y *= pJS.canvas.pxratio;
-        }
-
-        pJS.interactivity.status = 'mousemove';
-      });
+      addPointerEventListener('mousemove', pJS.interactivity.mouse);
 
       /* el on onmouseleave */
       pJS.interactivity.el.addEventListener('mouseleave', function(/*e*/){
@@ -1403,6 +1487,35 @@ particlesJS.dispatchMouseEvent = function(e)
     for(const receiver of particlesJS.canvas)
     {
         let eCopy = new MouseEvent(e.type, e);
+        receiver.dispatchEvent(eCopy);
+    }
+};
+
+function translateBodyEventType(event)
+{
+  let answer = event.name.replace('Filtered', "");
+  answer = answer.toLowerCase();
+  return answer;
+}
+
+particlesJS.cloneEvent = function(e) 
+{
+  if (e===undefined || e===null) return undefined;
+  let clone = new Event(translateBodyEventType(e), e);
+  for (let p in e) 
+  {
+      let d=Object.getOwnPropertyDescriptor(e, p);
+      if (d && (d.get || d.set)) Object.defineProperty(clone, p, d); else clone[p] = e[p];
+  }
+  Object.setPrototypeOf(clone, e);
+  return clone;
+}
+
+particlesJS.dispatchBodyEvent = function(e)
+{
+    for(const receiver of particlesJS.canvas)
+    {
+        let eCopy = this.cloneEvent(e);
         receiver.dispatchEvent(eCopy);
     }
 };
