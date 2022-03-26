@@ -767,6 +767,32 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
+  function enableEventEffect(event, effect)
+  {
+    const onEvent = 'on'+event;
+    return (pJS.interactivity.events[onEvent].enable && isInArray(effect, pJS.interactivity.events[onEvent].mode));
+  }
+  
+  function enableStatusEvent(status, event)
+  {
+    return (pJS.interactivity.events['on'+event].enable && pJS.interactivity.status == status);
+  }
+
+  function enableStatusEventEffect(status, event, effect)
+  {
+    // return (pJS.interactivity.status == status) && enableEventEffect(event, effect);
+    return enableStatusEvent(status, event) && isInArray(effect, pJS.interactivity.events['on'+event].mode);
+  }
+
+  function enableMoveEffect(effect)
+  {
+    const answer = 
+    enableStatusEventEffect('mousemove', 'hover', effect) 
+    || enableStatusEventEffect('lefthand', 'lefthand', effect)
+    || enableStatusEventEffect('righthand', 'righthand', effect);
+    return answer;
+  }
+
   function bubbleParticleMove(p, activeStatus, leaveStatus)
   {
     const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
@@ -828,32 +854,6 @@ particlesJS.Engine = function(tag_id, params) {
     }
 
     return initialState;
-  }
-
-  function enableEventEffect(event, effect)
-  {
-    const onEvent = 'on'+event;
-    return (pJS.interactivity.events[onEvent].enable && isInArray(effect, pJS.interactivity.events[onEvent].mode));
-  }
-  
-  function enableStatusEvent(status, event)
-  {
-    return (pJS.interactivity.events['on'+event].enable && pJS.interactivity.status == status);
-  }
-
-  function enableStatusEventEffect(status, event, effect)
-  {
-    // return (pJS.interactivity.status == status) && enableEventEffect(event, effect);
-    return enableStatusEvent(status, event) && isInArray(effect, pJS.interactivity.events['on'+event].mode);
-  }
-
-  function enableMoveEffect(effect)
-  {
-    const answer = 
-    enableStatusEventEffect('mousemove', 'hover', effect) 
-    || enableStatusEventEffect('lefthand', 'lefthand', effect)
-    || enableStatusEventEffect('righthand', 'righthand', effect);
-    return answer;
   }
 
   pJS.fn.modes.bubbleParticle = function(p) 
