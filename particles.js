@@ -1142,7 +1142,9 @@ particlesJS.Engine = function(tag_id, params) {
           target.pos_y *= pJS.canvas.pxratio;
         }
 
-        pJS.interactivity.status = type;
+        const typeTail = (e.bodyEvent && !e.visibility) ? "leave" : "";
+
+        pJS.interactivity.status = type + typeTail;
       }
       );
     }
@@ -1540,6 +1542,7 @@ particlesJS.dispatchBodyEvent = function(e)
     for(const receiver of particlesJS.canvas)
     {
         let eCopy = this.cloneEvent(e);
+        eCopy.bodyEvent = true;
         receiver.dispatchEvent(eCopy);
     }
 };
