@@ -855,6 +855,75 @@ particlesJS.Engine = function(tag_id, params) {
 
     return initialState;
   }
+  
+  function bubbleParticleClick(p)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.click_pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.click_pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time)/1000;
+
+    if (pJS.tmp.bubble_clicking) {
+    if (time_spent > pJS.interactivity.modes.bubble.duration) {
+      pJS.tmp.bubble_duration_end = true;
+    }
+
+    if (time_spent > pJS.interactivity.modes.bubble.duration*2) {
+      pJS.tmp.bubble_clicking = false;
+      pJS.tmp.bubble_duration_end = false;
+    }
+  }
+
+  const process = function(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
+    if (bubble_param != particles_param) {
+      if (!pJS.tmp.bubble_duration_end) {
+        if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
+          let obj = null;
+          if (p_obj_bubble != undefined) {
+            obj = p_obj_bubble;
+          } else {
+            obj = p_obj;
+          }
+          if (obj != bubble_param) {
+            const value = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
+            if (id == 'size') {
+              p.radius_bubble = value;
+            }
+            if (id == 'opacity') {
+              p.opacity_bubble = value;
+            }
+          }
+        } else {
+          if (id == 'size') {
+            p.radius_bubble = undefined;
+          }
+          if (id == 'opacity') {
+            p.opacity_bubble = undefined;
+          }
+        }
+      } else {
+        if (p_obj_bubble != undefined) {
+          const value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
+          const dif = bubble_param - value_tmp;
+          const value = bubble_param + dif;
+          if (id == 'size') {
+            p.radius_bubble = value;
+          }
+          if (id == 'opacity') {
+            p.opacity_bubble = value;
+          }
+        }
+      }
+    }
+  };
+
+  if (pJS.tmp.bubble_clicking) {
+    /* size */
+    process(pJS.interactivity.modes.bubble.size, pJS.particles.size.value, p.radius_bubble, p.radius, 'size');
+    /* opacity */
+    process(pJS.interactivity.modes.bubble.opacity, pJS.particles.opacity.value, p.opacity_bubble, p.opacity, 'opacity');
+  }
+  }
 
   pJS.fn.modes.bubbleParticle = function(p) 
   {
@@ -874,192 +943,147 @@ particlesJS.Engine = function(tag_id, params) {
     /* on click event */
     else if (enableEventEffect('click', 'bubble')) 
     {
-        const dx_mouse = p.x - pJS.interactivity.mouse.click_pos_x;
-        const dy_mouse = p.y - pJS.interactivity.mouse.click_pos_y;
-        const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-        const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time)/1000;
+      bubbleParticleClick(p);
+    }
+  };
 
-        if (pJS.tmp.bubble_clicking) {
-        if (time_spent > pJS.interactivity.modes.bubble.duration) {
-          pJS.tmp.bubble_duration_end = true;
-        }
+  function repulseParticleMove(p)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
 
-        if (time_spent > pJS.interactivity.modes.bubble.duration*2) {
-          pJS.tmp.bubble_clicking = false;
-          pJS.tmp.bubble_duration_end = false;
-        }
+    const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
+    const repulseRadius = pJS.interactivity.modes.repulse.distance;
+    const velocity = 100;
+    const repulseFactor = clamp((1/repulseRadius)*(-1*Math.pow(dist_mouse/repulseRadius, 2)+1)*repulseRadius*velocity, 0, 50);
+
+    const pos = {
+      x: p.x + normVec.x * repulseFactor,
+      y: p.y + normVec.y * repulseFactor,
+    };
+
+    if (pJS.particles.move.out_mode == 'bounce') {
+      if (pos.x - p.radius > 0 && pos.x + p.radius < pJS.canvas.w) {
+        p.x = pos.x;
       }
+      if (pos.y - p.radius > 0 && pos.y + p.radius < pJS.canvas.h) {
+        p.y = pos.y;
+      }
+    } else {
+      p.x = pos.x;
+      p.y = pos.y;
+    }
+  }
 
-      const process = function(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
-        if (bubble_param != particles_param) {
-          if (!pJS.tmp.bubble_duration_end) {
-            if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
-              let obj = null;
-              if (p_obj_bubble != undefined) {
-                obj = p_obj_bubble;
-              } else {
-                obj = p_obj;
-              }
-              if (obj != bubble_param) {
-                const value = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
-                if (id == 'size') {
-                  p.radius_bubble = value;
-                }
-                if (id == 'opacity') {
-                  p.opacity_bubble = value;
-                }
-              }
-            } else {
-              if (id == 'size') {
-                p.radius_bubble = undefined;
-              }
-              if (id == 'opacity') {
-                p.opacity_bubble = undefined;
-              }
-            }
-          } else {
-            if (p_obj_bubble != undefined) {
-              const value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
-              const dif = bubble_param - value_tmp;
-              const value = bubble_param + dif;
-              if (id == 'size') {
-                p.radius_bubble = value;
-              }
-              if (id == 'opacity') {
-                p.opacity_bubble = value;
-              }
-            }
+  function repulseParticleClick(p)
+  {
+    if (!pJS.tmp.repulse_finish) {
+      pJS.tmp.repulse_count++;
+      if (pJS.tmp.repulse_count == pJS.particles.array.length) {
+        pJS.tmp.repulse_finish = true;
+      }
+    }
+
+    if (pJS.tmp.repulse_clicking) {
+      const repulseRadius = Math.pow(pJS.interactivity.modes.repulse.distance/6, 3);
+
+      const dx = pJS.interactivity.mouse.click_pos_x - p.x;
+      const dy = pJS.interactivity.mouse.click_pos_y - p.y;
+      const d = dx*dx + dy*dy;
+
+      const force = -repulseRadius / d * 1;
+
+      const process = function() {
+        const f = Math.atan2(dy, dx);
+        p.vx = force * Math.cos(f);
+        p.vy = force * Math.sin(f);
+
+        if (pJS.particles.move.out_mode == 'bounce') {
+          const pos = {
+            x: p.x + p.vx,
+            y: p.y + p.vy,
+          };
+          if (pos.x + p.radius > pJS.canvas.w) {
+            p.vx = -p.vx;
+          } else if (pos.x - p.radius < 0) {
+            p.vx = -p.vx;
+          }
+          if (pos.y + p.radius > pJS.canvas.h) {
+            p.vy = -p.vy;
+          } else if (pos.y - p.radius < 0) {
+            p.vy = -p.vy;
           }
         }
       };
 
-      if (pJS.tmp.bubble_clicking) {
-        /* size */
-        process(pJS.interactivity.modes.bubble.size, pJS.particles.size.value, p.radius_bubble, p.radius, 'size');
-        /* opacity */
-        process(pJS.interactivity.modes.bubble.opacity, pJS.particles.opacity.value, p.opacity_bubble, p.opacity, 'opacity');
+      // default
+      if (d <= repulseRadius) {
+        process();
+      }
+
+      // bang - slow motion mode
+      // if(!pJS.tmp.repulse_finish){
+      //   if(d <= repulseRadius){
+      //     process();
+      //   }
+      // }else{
+      //   process();
+      // }
+    }
+    else 
+    {
+      if (pJS.tmp.repulse_clicking == false) {
+        p.vx = p.vx_i;
+        p.vy = p.vy_i;
       }
     }
-  };
+  }
 
   pJS.fn.modes.repulseParticle = function(p)
   {
     if (enableMoveEffect('repulse'))
     {
-      const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-      const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-      const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-
-      const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
-      const repulseRadius = pJS.interactivity.modes.repulse.distance;
-      const velocity = 100;
-      const repulseFactor = clamp((1/repulseRadius)*(-1*Math.pow(dist_mouse/repulseRadius, 2)+1)*repulseRadius*velocity, 0, 50);
-
-      const pos = {
-        x: p.x + normVec.x * repulseFactor,
-        y: p.y + normVec.y * repulseFactor,
-      };
-
-      if (pJS.particles.move.out_mode == 'bounce') {
-        if (pos.x - p.radius > 0 && pos.x + p.radius < pJS.canvas.w) {
-          p.x = pos.x;
-        }
-        if (pos.y - p.radius > 0 && pos.y + p.radius < pJS.canvas.h) {
-          p.y = pos.y;
-        }
-      } else {
-        p.x = pos.x;
-        p.y = pos.y;
-      }
-    } else if (pJS.interactivity.events.onclick.enable && isInArray('repulse', pJS.interactivity.events.onclick.mode)) {
-      if (!pJS.tmp.repulse_finish) {
-        pJS.tmp.repulse_count++;
-        if (pJS.tmp.repulse_count == pJS.particles.array.length) {
-          pJS.tmp.repulse_finish = true;
-        }
-      }
-
-      if (pJS.tmp.repulse_clicking) {
-        const repulseRadius = Math.pow(pJS.interactivity.modes.repulse.distance/6, 3);
-
-        const dx = pJS.interactivity.mouse.click_pos_x - p.x;
-        const dy = pJS.interactivity.mouse.click_pos_y - p.y;
-        const d = dx*dx + dy*dy;
-
-        const force = -repulseRadius / d * 1;
-
-        const process = function() {
-          const f = Math.atan2(dy, dx);
-          p.vx = force * Math.cos(f);
-          p.vy = force * Math.sin(f);
-
-          if (pJS.particles.move.out_mode == 'bounce') {
-            const pos = {
-              x: p.x + p.vx,
-              y: p.y + p.vy,
-            };
-            if (pos.x + p.radius > pJS.canvas.w) {
-              p.vx = -p.vx;
-            } else if (pos.x - p.radius < 0) {
-              p.vx = -p.vx;
-            }
-            if (pos.y + p.radius > pJS.canvas.h) {
-              p.vy = -p.vy;
-            } else if (pos.y - p.radius < 0) {
-              p.vy = -p.vy;
-            }
-          }
-        };
-
-        // default
-        if (d <= repulseRadius) {
-          process();
-        }
-
-        // bang - slow motion mode
-        // if(!pJS.tmp.repulse_finish){
-        //   if(d <= repulseRadius){
-        //     process();
-        //   }
-        // }else{
-        //   process();
-        // }
-      } else {
-        if (pJS.tmp.repulse_clicking == false) {
-          p.vx = p.vx_i;
-          p.vy = p.vy_i;
-        }
-      }
+      repulseParticleMove(p);
+    } 
+    else if (enableEventEffect('click', 'repulse'))
+    {
+      repulseParticleClick(p);
     }
   };
+
+  function grabParticle(p)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+
+    /* draw a line between the cursor and the particle if the distance between them is under the config distance */
+    if (dist_mouse <= pJS.interactivity.modes.grab.distance) {
+      const opacity_line = pJS.interactivity.modes.grab.line_linked.opacity - (dist_mouse / (1/pJS.interactivity.modes.grab.line_linked.opacity)) / pJS.interactivity.modes.grab.distance;
+
+      if (opacity_line > 0) {
+        /* style */
+        const color_line = pJS.particles.line_linked.color_rgb_line;
+        pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+opacity_line+')';
+        pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
+        // pJS.canvas.ctx.lineCap = 'round'; /* performance issue */
+
+        /* path */
+        pJS.canvas.ctx.beginPath();
+        pJS.canvas.ctx.moveTo(p.x, p.y);
+        pJS.canvas.ctx.lineTo(pJS.interactivity.mouse.pos_x, pJS.interactivity.mouse.pos_y);
+        pJS.canvas.ctx.stroke();
+        pJS.canvas.ctx.closePath();
+      }
+    }
+  }
 
  pJS.fn.modes.grabParticle = function(p)
  {
     if(enableMoveEffect('grab'))
     {
-      const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-      const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-      const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-
-      /* draw a line between the cursor and the particle if the distance between them is under the config distance */
-      if (dist_mouse <= pJS.interactivity.modes.grab.distance) {
-        const opacity_line = pJS.interactivity.modes.grab.line_linked.opacity - (dist_mouse / (1/pJS.interactivity.modes.grab.line_linked.opacity)) / pJS.interactivity.modes.grab.distance;
-
-        if (opacity_line > 0) {
-          /* style */
-          const color_line = pJS.particles.line_linked.color_rgb_line;
-          pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+opacity_line+')';
-          pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
-          // pJS.canvas.ctx.lineCap = 'round'; /* performance issue */
-
-          /* path */
-          pJS.canvas.ctx.beginPath();
-          pJS.canvas.ctx.moveTo(p.x, p.y);
-          pJS.canvas.ctx.lineTo(pJS.interactivity.mouse.pos_x, pJS.interactivity.mouse.pos_y);
-          pJS.canvas.ctx.stroke();
-          pJS.canvas.ctx.closePath();
-        }
-      }
+      grabParticle(p);
     }
   };
 
