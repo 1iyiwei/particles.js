@@ -961,7 +961,9 @@ particlesJS.Engine = function(tag_id, params) {
 
   function repulseParticleMove(p)
   {
-    const dist_mouse = distMouse(p);
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
     const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
     const repulseRadius = pJS.interactivity.modes.repulse.distance;
     const velocity = 100;
