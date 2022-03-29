@@ -86,7 +86,7 @@ particlesJS.build('constellation-particles',
       "events": {
         "onhover": {
           "enable": true,
-          "mode": "repulse"
+          "mode": "swirl"
         },
         "onclick": {
           "enable": true,
@@ -110,6 +110,10 @@ particlesJS.build('constellation-particles',
         },
         "repulse": {
           "distance": 200
+        },
+        "swirl": {
+          distance: 200,
+          velocity: 5
         },
         "push": {
           "particles_nb": 4

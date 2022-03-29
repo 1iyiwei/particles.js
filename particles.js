@@ -125,6 +125,11 @@ particlesJS.Engine = function(tag_id, params) {
           distance: 200,
           duration: 0.4,
         },
+        swirl: {
+          distance: 200,
+          velocity: 10,
+          duration: 0.4,
+        },
         push: {
           particles_nb: 4,
         },
@@ -160,6 +165,7 @@ particlesJS.Engine = function(tag_id, params) {
     mode_bubble_distance: pJS.interactivity.modes.bubble.distance,
     mode_bubble_size: pJS.interactivity.modes.bubble.size,
     mode_repulse_distance: pJS.interactivity.modes.repulse.distance,
+    mode_swirl_distance: pJS.interactivity.modes.swirl.distance,
   };
 
 
@@ -184,6 +190,7 @@ particlesJS.Engine = function(tag_id, params) {
     pJS.particles.line_linked.width = pJS.tmp.obj.line_linked_width * pJS.canvas.pxratio;
     pJS.interactivity.modes.bubble.size = pJS.tmp.obj.mode_bubble_size * pJS.canvas.pxratio;
     pJS.interactivity.modes.repulse.distance = pJS.tmp.obj.mode_repulse_distance * pJS.canvas.pxratio;
+    pJS.interactivity.modes.swirl.distance = pJS.tmp.obj.mode_swirl_distance * pJS.canvas.pxratio;
   };
 
 
@@ -793,10 +800,16 @@ particlesJS.Engine = function(tag_id, params) {
     return answer;
   }
 
+  function diffVect(p, pointer)
+  {
+    return {x: p.x - pointer.x, y: p.y - pointer.y};
+  }
+
   function distance(p, pointer)
   {
-    const dx = p.x - pointer.x;
-    const dy = p.y - pointer.y;
+    const diff = diffVect(p, pointer);
+    const dx = diff.x;
+    const dy = diff.y;
     return Math.sqrt(dx*dx + dy*dy);
   }
 
@@ -1096,13 +1109,42 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
+  function swirlParticleMove(p)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
+    const tangentVec = {x: -normVec.y, y: normVec.x};
+    const swirlRadius = pJS.interactivity.modes.swirl.distance;
+    const velocity = pJS.interactivity.modes.swirl.velocity;
+    const swirlFactor = clamp((-1*Math.pow(dist_mouse/swirlRadius, 2)+1)*velocity, 0, 50);
+
+    const pos = {
+      x: p.x + tangentVec.x * swirlFactor,
+      y: p.y + tangentVec.y * swirlFactor,
+    };
+
+    p.x = pos.x;
+    p.y = pos.y;
+  }
+
+ pJS.fn.modes.swirlParticle = function(p)
+ {
+    if(enableMoveEffect('swirl'))
+    {
+      swirlParticleMove(p);
+    }
+  };
+
   /* ---------- link custom effect(s) here ------------ */
 
   let effectNameFuncPairs = 
   {
     'bubble': pJS.fn.modes.bubbleParticle, 
     'repulse': pJS.fn.modes.repulseParticle,
-    'grab': pJS.fn.modes.grabParticle
+    'grab': pJS.fn.modes.grabParticle,
+    'swirl': pJS.fn.modes.swirlParticle
 };
 
   /* ---------- pJS functions - vendors ------------ */
