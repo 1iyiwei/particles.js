@@ -101,11 +101,19 @@ particlesJS.Engine = function(tag_id, params) {
         },
         onlefthand: {
           enable: false,
-          mode: 'repulse',
+          mode: 'swirl',
         },
         onrighthand: {
           enable: false,
           mode: 'bubble',
+        },
+        onforehead: {
+          enable: false,
+          mode: 'repulse',
+        },
+        onnose: {
+          enable: false,
+          mode: 'repulse',
         },
         resize: true,
       },
@@ -796,7 +804,9 @@ particlesJS.Engine = function(tag_id, params) {
     const answer = 
     enableStatusEventEffect('mousemove', 'hover', effect) 
     || enableStatusEventEffect('lefthand', 'lefthand', effect)
-    || enableStatusEventEffect('righthand', 'righthand', effect);
+    || enableStatusEventEffect('righthand', 'righthand', effect)
+    || enableStatusEventEffect('forehead', 'forehead', effect)
+    || enableStatusEventEffect('nose', 'nose', effect);
     return answer;
   }
 
@@ -953,13 +963,22 @@ particlesJS.Engine = function(tag_id, params) {
   pJS.fn.modes.bubbleParticle = function(p) 
   {
     /* on hover event */
-    if (enableStatusEventEffect('lefthand', 'lefthand', 'bubble'))
+    const bodyPoints = ['lefthand', 'righthand', 'forehead', 'nose'];
+
+    let status = false;
+
+    for(const bodyPoint of bodyPoints)
     {
-      bubbleParticleMove(p, 'lefthand', 'lefthandleave');
+      if (!status && enableStatusEventEffect(bodyPoint, bodyPoint, 'bubble'))
+      {
+        bubbleParticleMove(p, bodyPoint, bodyPoint + 'leave');
+        status = true;
+      }
     }
-    else if (enableStatusEventEffect('righthand', 'righthand', 'bubble'))
+
+    if(status)
     {
-      bubbleParticleMove(p, 'righthand', 'righthandleave');
+      // nothing else to do, handled above
     }
     else if (enableEventEffect('hover', 'bubble'))
     {
@@ -1200,14 +1219,14 @@ particlesJS.Engine = function(tag_id, params) {
       );
     }
 
-    if (pJS.interactivity.events.onlefthand.enable) 
-    {
-      addPointerEventListener('lefthand', pJS.interactivity.mouse);
-    }
+    const bodyPoints = ['lefthand', 'righthand', 'forehead', 'nose'];
 
-    if (pJS.interactivity.events.onrighthand.enable) 
+    for(const bodyPoint of bodyPoints)
     {
-      addPointerEventListener('righthand', pJS.interactivity.mouse);
+      if (pJS.interactivity.events['on' + bodyPoint].enable) 
+      {
+        addPointerEventListener(bodyPoint, pJS.interactivity.mouse);
+      }
     }
 
     /* detect mouse pos - on hover / click event */
