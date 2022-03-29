@@ -793,11 +793,26 @@ particlesJS.Engine = function(tag_id, params) {
     return answer;
   }
 
+  function distance(p, pointer)
+  {
+    const dx = p.x - pointer.x;
+    const dy = p.y - pointer.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function distMouse(p)
+  {
+    return distance(p, {x: pJS.interactivity.mouse.pos_x, y: pJS.interactivity.mouse.pos_y});
+  }
+
+  function distClick(p)
+  {
+    return distance(p, {x: pJS.interactivity.mouse.click_pos_x, y: pJS.interactivity.mouse.click_pos_y});
+  }
+
   function bubbleParticleMove(p, activeStatus, leaveStatus)
   {
-    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const dist_mouse = distMouse(p);
     const ratio = 1 - dist_mouse / pJS.interactivity.modes.bubble.distance;
 
     let initialState = false;
@@ -856,36 +871,53 @@ particlesJS.Engine = function(tag_id, params) {
     return initialState;
   }
   
-  function bubbleParticleClick(p)
-  {
-    const dx_mouse = p.x - pJS.interactivity.mouse.click_pos_x;
-    const dy_mouse = p.y - pJS.interactivity.mouse.click_pos_y;
-    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-    const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time)/1000;
+  function bubbleParticleClick(p) {
+    const dist_mouse = distClick(p);
+    const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time) / 1000;
 
     if (pJS.tmp.bubble_clicking) {
-    if (time_spent > pJS.interactivity.modes.bubble.duration) {
-      pJS.tmp.bubble_duration_end = true;
+      if (time_spent > pJS.interactivity.modes.bubble.duration) {
+        pJS.tmp.bubble_duration_end = true;
+      }
+
+      if (time_spent > pJS.interactivity.modes.bubble.duration * 2) {
+        pJS.tmp.bubble_clicking = false;
+        pJS.tmp.bubble_duration_end = false;
+      }
     }
 
-    if (time_spent > pJS.interactivity.modes.bubble.duration*2) {
-      pJS.tmp.bubble_clicking = false;
-      pJS.tmp.bubble_duration_end = false;
-    }
-  }
-
-  const process = function(bubble_param, particles_param, p_obj_bubble, p_obj, id) {
-    if (bubble_param != particles_param) {
-      if (!pJS.tmp.bubble_duration_end) {
-        if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
-          let obj = null;
-          if (p_obj_bubble != undefined) {
-            obj = p_obj_bubble;
+    const process = function (bubble_param, particles_param, p_obj_bubble, p_obj, id) {
+      if (bubble_param != particles_param) {
+        if (!pJS.tmp.bubble_duration_end) {
+          if (dist_mouse <= pJS.interactivity.modes.bubble.distance) {
+            let obj = null;
+            if (p_obj_bubble != undefined) {
+              obj = p_obj_bubble;
+            } else {
+              obj = p_obj;
+            }
+            if (obj != bubble_param) {
+              const value = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
+              if (id == 'size') {
+                p.radius_bubble = value;
+              }
+              if (id == 'opacity') {
+                p.opacity_bubble = value;
+              }
+            }
           } else {
-            obj = p_obj;
+            if (id == 'size') {
+              p.radius_bubble = undefined;
+            }
+            if (id == 'opacity') {
+              p.opacity_bubble = undefined;
+            }
           }
-          if (obj != bubble_param) {
-            const value = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
+        } else {
+          if (p_obj_bubble != undefined) {
+            const value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
+            const dif = bubble_param - value_tmp;
+            const value = bubble_param + dif;
             if (id == 'size') {
               p.radius_bubble = value;
             }
@@ -893,36 +925,16 @@ particlesJS.Engine = function(tag_id, params) {
               p.opacity_bubble = value;
             }
           }
-        } else {
-          if (id == 'size') {
-            p.radius_bubble = undefined;
-          }
-          if (id == 'opacity') {
-            p.opacity_bubble = undefined;
-          }
-        }
-      } else {
-        if (p_obj_bubble != undefined) {
-          const value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration);
-          const dif = bubble_param - value_tmp;
-          const value = bubble_param + dif;
-          if (id == 'size') {
-            p.radius_bubble = value;
-          }
-          if (id == 'opacity') {
-            p.opacity_bubble = value;
-          }
         }
       }
-    }
-  };
+    };
 
-  if (pJS.tmp.bubble_clicking) {
-    /* size */
-    process(pJS.interactivity.modes.bubble.size, pJS.particles.size.value, p.radius_bubble, p.radius, 'size');
-    /* opacity */
-    process(pJS.interactivity.modes.bubble.opacity, pJS.particles.opacity.value, p.opacity_bubble, p.opacity, 'opacity');
-  }
+    if (pJS.tmp.bubble_clicking) {
+      /* size */
+      process(pJS.interactivity.modes.bubble.size, pJS.particles.size.value, p.radius_bubble, p.radius, 'size');
+      /* opacity */
+      process(pJS.interactivity.modes.bubble.opacity, pJS.particles.opacity.value, p.opacity_bubble, p.opacity, 'opacity');
+    }
   }
 
   pJS.fn.modes.bubbleParticle = function(p) 
@@ -949,10 +961,7 @@ particlesJS.Engine = function(tag_id, params) {
 
   function repulseParticleMove(p)
   {
-    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-
+    const dist_mouse = distMouse(p);
     const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
     const repulseRadius = pJS.interactivity.modes.repulse.distance;
     const velocity = 100;
@@ -1054,9 +1063,7 @@ particlesJS.Engine = function(tag_id, params) {
 
   function grabParticle(p)
   {
-    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
-    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
-    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const dist_mouse = distMouse(p);
 
     /* draw a line between the cursor and the particle if the distance between them is under the config distance */
     if (dist_mouse <= pJS.interactivity.modes.grab.distance) {
