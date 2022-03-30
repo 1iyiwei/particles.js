@@ -109,7 +109,7 @@ particlesJS.Engine = function(tag_id, params) {
         },
         onforehead: {
           enable: false,
-          mode: 'repulse',
+          mode: 'blow',
         },
         onnose: {
           enable: false,
@@ -131,6 +131,11 @@ particlesJS.Engine = function(tag_id, params) {
         },
         repulse: {
           distance: 200,
+          duration: 0.4,
+        },
+        blow: {
+          distance: 200,
+          velocity: {x: 0, y: -10}, // negative points upward in html canvas 
           duration: 0.4,
         },
         swirl: {
@@ -156,6 +161,8 @@ particlesJS.Engine = function(tag_id, params) {
     tmp: {},
   };
 
+  const bodyPoints = ['lefthand', 'righthand', 'forehead', 'nose'];
+
   const pJS = this.pJS;
 
   /* params settings */
@@ -174,6 +181,7 @@ particlesJS.Engine = function(tag_id, params) {
     mode_bubble_size: pJS.interactivity.modes.bubble.size,
     mode_repulse_distance: pJS.interactivity.modes.repulse.distance,
     mode_swirl_distance: pJS.interactivity.modes.swirl.distance,
+    mode_blow_distance: pJS.interactivity.modes.blow.distance,
   };
 
 
@@ -199,6 +207,7 @@ particlesJS.Engine = function(tag_id, params) {
     pJS.interactivity.modes.bubble.size = pJS.tmp.obj.mode_bubble_size * pJS.canvas.pxratio;
     pJS.interactivity.modes.repulse.distance = pJS.tmp.obj.mode_repulse_distance * pJS.canvas.pxratio;
     pJS.interactivity.modes.swirl.distance = pJS.tmp.obj.mode_swirl_distance * pJS.canvas.pxratio;
+    pJS.interactivity.modes.blow.distance = pJS.tmp.obj.mode_blow_distance * pJS.canvas.pxratio;
   };
 
 
@@ -963,8 +972,6 @@ particlesJS.Engine = function(tag_id, params) {
   pJS.fn.modes.bubbleParticle = function(p) 
   {
     /* on hover event */
-    const bodyPoints = ['lefthand', 'righthand', 'forehead', 'nose'];
-
     let status = false;
 
     for(const bodyPoint of bodyPoints)
@@ -1128,7 +1135,7 @@ particlesJS.Engine = function(tag_id, params) {
     }
   };
 
-  function swirlParticleMove(p)
+  function swirlParticle(p)
   {
     const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
     const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
@@ -1137,7 +1144,7 @@ particlesJS.Engine = function(tag_id, params) {
     const tangentVec = {x: -normVec.y, y: normVec.x};
     const swirlRadius = pJS.interactivity.modes.swirl.distance;
     const velocity = pJS.interactivity.modes.swirl.velocity;
-    const swirlFactor = clamp((-1*Math.pow(dist_mouse/swirlRadius, 2)+1)*velocity, 0, 50);
+    const swirlFactor = Math.exp(-Math.pow(dist_mouse/swirlRadius, 2))*velocity;
 
     const pos = {
       x: p.x + tangentVec.x * swirlFactor,
@@ -1148,23 +1155,49 @@ particlesJS.Engine = function(tag_id, params) {
     p.y = pos.y;
   }
 
- pJS.fn.modes.swirlParticle = function(p)
- {
-    if(enableMoveEffect('swirl'))
-    {
-      swirlParticleMove(p);
+  pJS.fn.modes.swirlParticle = function (p) {
+    if (enableMoveEffect('swirl')) {
+      swirlParticle(p);
+    }
+  };
+
+  function blowParticle(p)
+  {
+    const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
+    const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
+    const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+    const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
+
+    const blowRadius = pJS.interactivity.modes.blow.distance;
+    
+    const velocity = pJS.interactivity.modes.blow.velocity;
+    const velocityNorm = Math.sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
+    const velocityVec = {x: velocity.x/velocityNorm, y: velocity.y/velocityNorm};
+    
+    const angularFalloff = velocityVec.x*normVec.x + velocityVec.y*normVec.y;
+    const spatialFalloff = Math.exp(-Math.pow(dist_mouse/blowRadius, 2));
+    const blowFactor = spatialFalloff*clamp(angularFalloff, 0, angularFalloff);
+
+    p.x += velocity.x*blowFactor;
+    p.y += velocity.y*blowFactor;
+  }
+
+  pJS.fn.modes.blowParticle = function (p) {
+    if (enableMoveEffect('blow')) {
+      blowParticle(p);
     }
   };
 
   /* ---------- link custom effect(s) here ------------ */
 
-  let effectNameFuncPairs = 
+  let effectNameFuncPairs =
   {
-    'bubble': pJS.fn.modes.bubbleParticle, 
+    'bubble': pJS.fn.modes.bubbleParticle,
     'repulse': pJS.fn.modes.repulseParticle,
     'grab': pJS.fn.modes.grabParticle,
-    'swirl': pJS.fn.modes.swirlParticle
-};
+    'swirl': pJS.fn.modes.swirlParticle,
+    'blow': pJS.fn.modes.blowParticle
+  };
 
   /* ---------- pJS functions - vendors ------------ */
   
@@ -1218,8 +1251,6 @@ particlesJS.Engine = function(tag_id, params) {
       }
       );
     }
-
-    const bodyPoints = ['lefthand', 'righthand', 'forehead', 'nose'];
 
     for(const bodyPoint of bodyPoints)
     {
