@@ -74,7 +74,7 @@ particlesJS.build("snow-particles", {
       "events": {
         "onhover": {
           "enable": true,
-          "mode":  "bubble"
+          "mode":  ["blow", "bubble"]
         },
         "onclick": {
           "enable": true,
