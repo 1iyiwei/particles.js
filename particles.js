@@ -1176,7 +1176,7 @@ particlesJS.Engine = function(tag_id, params) {
     
     const angularFalloff = velocityVec.x*normVec.x + velocityVec.y*normVec.y;
     const spatialFalloff = Math.exp(-Math.pow(dist_mouse/blowRadius, 2));
-    const blowFactor = spatialFalloff*clamp(angularFalloff, 0, angularFalloff);
+    const blowFactor = spatialFalloff*clamp(angularFalloff, 0, Math.abs(angularFalloff));
 
     p.x += velocity.x*blowFactor;
     p.y += velocity.y*blowFactor;
