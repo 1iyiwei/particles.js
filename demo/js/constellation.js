@@ -11,7 +11,9 @@ particlesJS.load('particles-js', 'particles.json', function() {
 
 /* Otherwise just put the config content (json): */
 
-particlesJS.build('constellation-particles',
+import Particles from '../../particles.js';
+
+Particles.JS.build('constellation-particles',
   
   {
     "particles": {

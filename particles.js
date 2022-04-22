@@ -7,7 +7,11 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-let particlesJS = {};
+import * as Particles from './particles.js';
+export default Particles;
+
+const particlesJS = {};
+export {particlesJS as JS};
 
 particlesJS.Engine = function(tag_id, params) {
   const canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
@@ -632,7 +636,8 @@ particlesJS.Engine = function(tag_id, params) {
       }
 
       /* events */
-      for (const [effectType, effectFunc] of Object.entries(effectNameFuncPairs))
+      //for (const [effectType, effectFunc] of Object.entries(effectNameFuncPairs))
+      for (const effectFunc of Object.values(effectNameFuncPairs))
       {
         effectFunc(p);
       }
@@ -1250,7 +1255,7 @@ particlesJS.Engine = function(tag_id, params) {
         pJS.interactivity.status = type + typeTail;
       }
       );
-    }
+    };
 
     for(const bodyPoint of bodyPoints)
     {
@@ -1547,18 +1552,20 @@ particlesJS.Engine = function(tag_id, params) {
 
 /* ---------- global functions - vendors ------------ */
 
-Object.deepExtend = function(destination, source) {
+function deepExtend(destination, source) {
   for (const property in source) {
     if (source[property] && source[property].constructor &&
      source[property].constructor === Object) {
       destination[property] = destination[property] || {};
-      arguments.callee(destination[property], source[property]);
+      //arguments.callee(destination[property], source[property]);
+      deepExtend(destination[property], source[property]);
     } else {
       destination[property] = source[property];
     }
   }
   return destination;
 };
+Object.deepExtend = deepExtend;
 
 window.requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
@@ -1627,16 +1634,25 @@ function translateBodyEventType(event)
 
 particlesJS.cloneEvent = function(e) 
 {
-  if (e===undefined || e===null) return undefined;
-  let clone = new Event(translateBodyEventType(e), e);
+  if (e===undefined || e===null) {return undefined;}
+  const eventType = translateBodyEventType(e);
+  let clone = new Event(eventType, e);
   for (let p in e) 
   {
       let d=Object.getOwnPropertyDescriptor(e, p);
-      if (d && (d.get || d.set)) Object.defineProperty(clone, p, d); else clone[p] = e[p];
+      if (d && (d.get || d.set))
+      {
+        Object.defineProperty(clone, p, d);
+      }
+      else if(p != 'type')
+      {
+        //console.log(p, clone[p], e[p]);
+        clone[p] = e[p];
+      }
   }
   Object.setPrototypeOf(clone, e);
   return clone;
-}
+};
 
 particlesJS.dispatchBodyEvent = function(e)
 {

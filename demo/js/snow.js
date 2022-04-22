@@ -1,6 +1,6 @@
-//https://github.com/VincentGarreau/particles.js/
+import Particles from '../../particles.js';
 
-particlesJS.build("snow-particles", {
+Particles.JS.build("snow-particles", {
     "particles": {
       "number": {
         "value": 400,
