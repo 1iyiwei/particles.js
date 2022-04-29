@@ -147,7 +147,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
         },
         blow: {
           distance: 200,
-          velocity: {x: 0, y: -10}, // negative points upward in html canvas 
+          velocity: {x: 0, y: -10}, // negative points upward in html canvas
           duration: 0.4,
         },
         swirl: {
@@ -351,33 +351,33 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     /* animation - velocity for speed */
     let velbase = {};
     switch (pJS.particles.move.direction) {
-      case 'top':
-        velbase = {x: 0, y: -1};
-        break;
-      case 'top-right':
-        velbase = {x: 0.5, y: -0.5};
-        break;
-      case 'right':
-        velbase = {x: 1, y: -0};
-        break;
-      case 'bottom-right':
-        velbase = {x: 0.5, y: 0.5};
-        break;
-      case 'bottom':
-        velbase = {x: 0, y: 1};
-        break;
-      case 'bottom-left':
-        velbase = {x: -0.5, y: 1};
-        break;
-      case 'left':
-        velbase = {x: -1, y: 0};
-        break;
-      case 'top-left':
-        velbase = {x: -0.5, y: -0.5};
-        break;
-      default:
-        velbase = {x: 0, y: 0};
-        break;
+    case 'top':
+      velbase = {x: 0, y: -1};
+      break;
+    case 'top-right':
+      velbase = {x: 0.5, y: -0.5};
+      break;
+    case 'right':
+      velbase = {x: 1, y: -0};
+      break;
+    case 'bottom-right':
+      velbase = {x: 0.5, y: 0.5};
+      break;
+    case 'bottom':
+      velbase = {x: 0, y: 1};
+      break;
+    case 'bottom-left':
+      velbase = {x: -0.5, y: 1};
+      break;
+    case 'left':
+      velbase = {x: -1, y: 0};
+      break;
+    case 'top-left':
+      velbase = {x: -0.5, y: -0.5};
+      break;
+    default:
+      velbase = {x: 0, y: 0};
+      break;
     }
 
     if (pJS.particles.move.straight) {
@@ -459,49 +459,49 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     pJS.canvas.ctx.beginPath();
 
     switch (p.shape) {
-      case 'circle':
-        pJS.canvas.ctx.arc(p.x, p.y, radius, 0, Math.PI * 2, false);
-        break;
+    case 'circle':
+      pJS.canvas.ctx.arc(p.x, p.y, radius, 0, Math.PI * 2, false);
+      break;
 
-      case 'edge':
-        pJS.canvas.ctx.rect(p.x-radius, p.y-radius, radius*2, radius*2);
-        break;
+    case 'edge':
+      pJS.canvas.ctx.rect(p.x-radius, p.y-radius, radius*2, radius*2);
+      break;
 
-      case 'triangle':
-        pJS.fn.vendors.drawShape(pJS.canvas.ctx, p.x-radius, p.y+radius / 1.66, radius*2, 3, 2);
-        break;
+    case 'triangle':
+      pJS.fn.vendors.drawShape(pJS.canvas.ctx, p.x-radius, p.y+radius / 1.66, radius*2, 3, 2);
+      break;
 
-      case 'polygon':
-        pJS.fn.vendors.drawShape(
-            pJS.canvas.ctx,
-            p.x - radius / (pJS.particles.shape.polygon.nb_sides/3.5), // startX
-            p.y - radius / (2.66/3.5), // startY
-            radius*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
-            pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
-            1, // sideCountDenominator
-        );
-        break;
+    case 'polygon':
+      pJS.fn.vendors.drawShape(
+        pJS.canvas.ctx,
+        p.x - radius / (pJS.particles.shape.polygon.nb_sides/3.5), // startX
+        p.y - radius / (2.66/3.5), // startY
+        radius*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
+        pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
+        1, // sideCountDenominator
+      );
+      break;
 
-      case 'star':
-        pJS.fn.vendors.drawShape(
-            pJS.canvas.ctx,
-            p.x - radius*2 / (pJS.particles.shape.polygon.nb_sides/4), // startX
-            p.y - radius / (2*2.66/3.5), // startY
-            radius*2*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
-            pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
-            2, // sideCountDenominator
-        );
-        break;
+    case 'star':
+      pJS.fn.vendors.drawShape(
+        pJS.canvas.ctx,
+        p.x - radius*2 / (pJS.particles.shape.polygon.nb_sides/4), // startX
+        p.y - radius / (2*2.66/3.5), // startY
+        radius*2*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
+        pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
+        2, // sideCountDenominator
+      );
+      break;
 
-      case 'image':
-        {
+    case 'image':
+      {
         const draw = function() {
           pJS.canvas.ctx.drawImage(
-              img_obj,
-              p.x-radius,
-              p.y-radius,
-              radius*2,
-              radius*2 / p.img.ratio,
+            img_obj,
+            p.x-radius,
+            p.y-radius,
+            radius*2,
+            radius*2 / p.img.ratio,
           );
         };
 
@@ -516,7 +516,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
           draw();
         }
       }
-        break;
+      break;
     }
 
     pJS.canvas.ctx.closePath();
@@ -537,8 +537,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   };
 
-  pJS.fn.particlesUpdate = function()
-  {
+  pJS.fn.particlesUpdate = function() {
     for (let i = 0; i < pJS.particles.array.length; i++) {
       /* the particle */
       const p = pJS.particles.array[i];
@@ -629,24 +628,23 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
 
       /* out of canvas modes */
       switch (pJS.particles.move.out_mode) {
-        case 'bounce':
-          if (p.x + p.radius > pJS.canvas.w) {
-            p.vx = -p.vx;
-          } else if (p.x - p.radius < 0) {
-            p.vx = -p.vx;
-          }
-          if (p.y + p.radius > pJS.canvas.h) {
-            p.vy = -p.vy;
-          } else if (p.y - p.radius < 0) {
-            p.vy = -p.vy;
-          }
-          break;
+      case 'bounce':
+        if (p.x + p.radius > pJS.canvas.w) {
+          p.vx = -p.vx;
+        } else if (p.x - p.radius < 0) {
+          p.vx = -p.vx;
+        }
+        if (p.y + p.radius > pJS.canvas.h) {
+          p.vy = -p.vy;
+        } else if (p.y - p.radius < 0) {
+          p.vy = -p.vy;
+        }
+        break;
       }
 
       /* events */
       //for (const [effectType, effectFunc] of Object.entries(effectNameFuncPairs))
-      for (const effectFunc of Object.values(effectNameFuncPairs))
-      {
+      for (const effectFunc of Object.values(effectNameFuncPairs)) {
         effectFunc(p);
       }
 
@@ -778,14 +776,14 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
 
     for (let i = 0; i < nb; i++) {
       pJS.particles.array.push(
-          new pJS.fn.particle(
-              pJS.particles.color,
-              pJS.particles.opacity.value,
-              {
-                'x': pos ? pos.pos_x : Math.random() * pJS.canvas.w,
-                'y': pos ? pos.pos_y : Math.random() * pJS.canvas.h,
-              },
-          ),
+        new pJS.fn.particle(
+          pJS.particles.color,
+          pJS.particles.opacity.value,
+          {
+            'x': pos ? pos.pos_x : Math.random() * pJS.canvas.w,
+            'y': pos ? pos.pos_y : Math.random() * pJS.canvas.h,
+          },
+        ),
       );
       if (i == nb-1) {
         if (!pJS.particles.move.enable) {
@@ -804,27 +802,23 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   };
 
-  function enableEventEffect(event, effect)
-  {
+  function enableEventEffect(event, effect) {
     const onEvent = 'on'+event;
     return (pJS.interactivity.events[onEvent].enable && isInArray(effect, pJS.interactivity.events[onEvent].mode));
   }
-  
-  function enableStatusEvent(status, event)
-  {
+
+  function enableStatusEvent(status, event) {
     return (pJS.interactivity.events['on'+event].enable && pJS.interactivity.status == status);
   }
 
-  function enableStatusEventEffect(status, event, effect)
-  {
+  function enableStatusEventEffect(status, event, effect) {
     // return (pJS.interactivity.status == status) && enableEventEffect(event, effect);
     return enableStatusEvent(status, event) && isInArray(effect, pJS.interactivity.events['on'+event].mode);
   }
 
-  function enableMoveEffect(effect)
-  {
-    const answer = 
-    enableStatusEventEffect('mousemove', 'hover', effect) 
+  function enableMoveEffect(effect) {
+    const answer =
+    enableStatusEventEffect('mousemove', 'hover', effect)
     || enableStatusEventEffect('lefthand', 'lefthand', effect)
     || enableStatusEventEffect('righthand', 'righthand', effect)
     || enableStatusEventEffect('lefteye', 'lefteye', effect)
@@ -834,31 +828,26 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     return answer;
   }
 
-  function diffVect(p, pointer)
-  {
+  function diffVect(p, pointer) {
     return {x: p.x - pointer.x, y: p.y - pointer.y};
   }
 
-  function distance(p, pointer)
-  {
+  function distance(p, pointer) {
     const diff = diffVect(p, pointer);
     const dx = diff.x;
     const dy = diff.y;
     return Math.sqrt(dx*dx + dy*dy);
   }
 
-  function distMouse(p)
-  {
+  function distMouse(p) {
     return distance(p, {x: pJS.interactivity.mouse.pos_x, y: pJS.interactivity.mouse.pos_y});
   }
 
-  function distClick(p)
-  {
+  function distClick(p) {
     return distance(p, {x: pJS.interactivity.mouse.click_pos_x, y: pJS.interactivity.mouse.click_pos_y});
   }
 
-  function bubbleParticleMove(p, activeStatus, leaveStatus)
-  {
+  function bubbleParticleMove(p, activeStatus, leaveStatus) {
     const dist_mouse = distMouse(p);
     const ratio = 1 - dist_mouse / pJS.interactivity.modes.bubble.distance;
 
@@ -917,7 +906,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
 
     return initialState;
   }
-  
+
   function bubbleParticleClick(p) {
     const dist_mouse = distClick(p);
     const time_spent = (new Date().getTime() - pJS.interactivity.mouse.click_time) / 1000;
@@ -984,37 +973,27 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   }
 
-  pJS.fn.modes.bubbleParticle = function(p) 
-  {
+  pJS.fn.modes.bubbleParticle = function(p) {
     /* on hover event */
     let status = false;
 
-    for(const bodyPoint of bodyPoints)
-    {
-      if (!status && enableStatusEventEffect(bodyPoint, bodyPoint, 'bubble'))
-      {
+    for(const bodyPoint of bodyPoints) {
+      if (!status && enableStatusEventEffect(bodyPoint, bodyPoint, 'bubble')) {
         bubbleParticleMove(p, bodyPoint, bodyPoint + 'leave');
         status = true;
       }
     }
 
-    if(status)
-    {
+    if(status) {
       // nothing else to do, handled above
-    }
-    else if (enableEventEffect('hover', 'bubble'))
-    {
+    } else if (enableEventEffect('hover', 'bubble')) {
       bubbleParticleMove(p, 'mousemove', 'mouseleave');
-    }
-    /* on click event */
-    else if (enableEventEffect('click', 'bubble')) 
-    {
+    } else if (enableEventEffect('click', 'bubble')) {
       bubbleParticleClick(p);
     }
   };
 
-  function repulseParticleMove(p)
-  {
+  function repulseParticleMove(p) {
     const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
     const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
     const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
@@ -1041,8 +1020,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   }
 
-  function repulseParticleClick(p)
-  {
+  function repulseParticleClick(p) {
     if (!pJS.tmp.repulse_finish) {
       pJS.tmp.repulse_count++;
       if (pJS.tmp.repulse_count == pJS.particles.array.length) {
@@ -1095,9 +1073,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
       // }else{
       //   process();
       // }
-    }
-    else 
-    {
+    } else {
       if (pJS.tmp.repulse_clicking == false) {
         p.vx = p.vx_i;
         p.vy = p.vy_i;
@@ -1105,20 +1081,15 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   }
 
-  pJS.fn.modes.repulseParticle = function(p)
-  {
-    if (enableMoveEffect('repulse'))
-    {
+  pJS.fn.modes.repulseParticle = function(p) {
+    if (enableMoveEffect('repulse')) {
       repulseParticleMove(p);
-    } 
-    else if (enableEventEffect('click', 'repulse'))
-    {
+    } else if (enableEventEffect('click', 'repulse')) {
       repulseParticleClick(p);
     }
   };
 
-  function grabParticle(p)
-  {
+  function grabParticle(p) {
     const dist_mouse = distMouse(p);
 
     /* draw a line between the cursor and the particle if the distance between them is under the config distance */
@@ -1142,16 +1113,13 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   }
 
- pJS.fn.modes.grabParticle = function(p)
- {
-    if(enableMoveEffect('grab'))
-    {
+  pJS.fn.modes.grabParticle = function(p) {
+    if(enableMoveEffect('grab')) {
       grabParticle(p);
     }
   };
 
-  function swirlParticle(p)
-  {
+  function swirlParticle(p) {
     const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
     const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
     const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
@@ -1176,19 +1144,18 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
     }
   };
 
-  function blowParticle(p)
-  {
+  function blowParticle(p) {
     const dx_mouse = p.x - pJS.interactivity.mouse.pos_x;
     const dy_mouse = p.y - pJS.interactivity.mouse.pos_y;
     const dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
     const normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse};
 
     const blowRadius = pJS.interactivity.modes.blow.distance;
-    
+
     const velocity = pJS.interactivity.modes.blow.velocity;
     const velocityNorm = Math.sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
     const velocityVec = {x: velocity.x/velocityNorm, y: velocity.y/velocityNorm};
-    
+
     const angularFalloff = velocityVec.x*normVec.x + velocityVec.y*normVec.y;
     const spatialFalloff = Math.exp(-Math.pow(dist_mouse/blowRadius, 2));
     const blowFactor = spatialFalloff*clamp(angularFalloff, 0, Math.abs(angularFalloff));
@@ -1215,7 +1182,7 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
   };
 
   /* ---------- pJS functions - vendors ------------ */
-  
+
   pJS.fn.vendors.eventsListeners = function() {
     /* events target element */
     if (pJS.interactivity.detect_on == 'window') {
@@ -1224,18 +1191,14 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
       pJS.interactivity.el = pJS.canvas.el;
     }
 
-    const computeCoord = function(e)
-    {
+    const computeCoord = function(e) {
       let pos_x = 0;
       let pos_y = 0;
 
-      if (pJS.interactivity.el == window)
-      {
+      if (pJS.interactivity.el == window) {
         pos_x = e.clientX,
         pos_y = e.clientY;
-      } 
-      else
-      {
+      } else {
         pos_x = e.offsetX || e.clientX,
         pos_y = e.offsetY || e.clientY;
       }
@@ -1243,34 +1206,30 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
       return {x: pos_x, y: pos_y};
     };
 
-    const addPointerEventListener = function(type, target)
-    {
+    const addPointerEventListener = function(type, target) {
       pJS.interactivity.el.addEventListener(type,
-      function(e) 
-      {
-        const coord = computeCoord(e);
-        const pos_x = coord.x;
-        const pos_y = coord.y;
+        function(e) {
+          const coord = computeCoord(e);
+          const pos_x = coord.x;
+          const pos_y = coord.y;
 
-        target.pos_x = pos_x;
-        target.pos_y = pos_y;
+          target.pos_x = pos_x;
+          target.pos_y = pos_y;
 
-        if (pJS.tmp.retina) {
-          target.pos_x *= pJS.canvas.pxratio;
-          target.pos_y *= pJS.canvas.pxratio;
+          if (pJS.tmp.retina) {
+            target.pos_x *= pJS.canvas.pxratio;
+            target.pos_y *= pJS.canvas.pxratio;
+          }
+
+          const typeTail = (e.bodyEvent && !e.visibility) ? "leave" : "";
+
+          pJS.interactivity.status = type + typeTail;
         }
-
-        const typeTail = (e.bodyEvent && !e.visibility) ? "leave" : "";
-
-        pJS.interactivity.status = type + typeTail;
-      }
       );
     };
 
-    for(const bodyPoint of bodyPoints)
-    {
-      if (pJS.interactivity.events['on' + bodyPoint].enable) 
-      {
+    for(const bodyPoint of bodyPoints) {
+      if (pJS.interactivity.events['on' + bodyPoint].enable) {
         addPointerEventListener(bodyPoint, pJS.interactivity.mouse);
       }
     }
@@ -1297,34 +1256,34 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
 
         if (pJS.interactivity.events.onclick.enable) {
           switch (pJS.interactivity.events.onclick.mode) {
-            case 'push':
-              if (pJS.particles.move.enable) {
+          case 'push':
+            if (pJS.particles.move.enable) {
+              pJS.fn.modes.pushParticles(pJS.interactivity.modes.push.particles_nb, pJS.interactivity.mouse);
+            } else {
+              if (pJS.interactivity.modes.push.particles_nb == 1) {
                 pJS.fn.modes.pushParticles(pJS.interactivity.modes.push.particles_nb, pJS.interactivity.mouse);
-              } else {
-                if (pJS.interactivity.modes.push.particles_nb == 1) {
-                  pJS.fn.modes.pushParticles(pJS.interactivity.modes.push.particles_nb, pJS.interactivity.mouse);
-                } else if (pJS.interactivity.modes.push.particles_nb > 1) {
-                  pJS.fn.modes.pushParticles(pJS.interactivity.modes.push.particles_nb);
-                }
+              } else if (pJS.interactivity.modes.push.particles_nb > 1) {
+                pJS.fn.modes.pushParticles(pJS.interactivity.modes.push.particles_nb);
               }
-              break;
+            }
+            break;
 
-            case 'remove':
-              pJS.fn.modes.removeParticles(pJS.interactivity.modes.remove.particles_nb);
-              break;
+          case 'remove':
+            pJS.fn.modes.removeParticles(pJS.interactivity.modes.remove.particles_nb);
+            break;
 
-            case 'bubble':
-              pJS.tmp.bubble_clicking = true;
-              break;
+          case 'bubble':
+            pJS.tmp.bubble_clicking = true;
+            break;
 
-            case 'repulse':
-              pJS.tmp.repulse_clicking = true;
-              pJS.tmp.repulse_count = 0;
-              pJS.tmp.repulse_finish = false;
-              setTimeout(function() {
-                pJS.tmp.repulse_clicking = false;
-              }, pJS.interactivity.modes.repulse.duration*1000);
-              break;
+          case 'repulse':
+            pJS.tmp.repulse_clicking = true;
+            pJS.tmp.repulse_count = 0;
+            pJS.tmp.repulse_finish = false;
+            setTimeout(function() {
+              pJS.tmp.repulse_clicking = false;
+            }, pJS.interactivity.modes.repulse.duration*1000);
+            break;
           }
         }
       });
@@ -1626,52 +1585,44 @@ function isInArray(value, array) {
 window.pJSDom = [];
 particlesJS.canvas = [];
 
-particlesJS.dispatchMouseEvent = function(e)
-{
-    for(const receiver of particlesJS.canvas)
-    {
-        let eCopy = new MouseEvent(e.type, e);
-        receiver.dispatchEvent(eCopy);
-    }
+particlesJS.dispatchMouseEvent = function(e) {
+  for(const receiver of particlesJS.canvas) {
+    let eCopy = new MouseEvent(e.type, e);
+    receiver.dispatchEvent(eCopy);
+  }
 };
 
-function translateBodyEventType(event)
-{
+function translateBodyEventType(event) {
   let answer = event.name.replace('Filtered', "");
   answer = answer.toLowerCase();
   return answer;
 }
 
-particlesJS.cloneEvent = function(e) 
-{
-  if (e===undefined || e===null) {return undefined;}
+particlesJS.cloneEvent = function(e) {
+  if (e===undefined || e===null) {
+    return undefined;
+  }
   const eventType = translateBodyEventType(e);
   let clone = new Event(eventType, e);
-  for (let p in e) 
-  {
-      let d=Object.getOwnPropertyDescriptor(e, p);
-      if (d && (d.get || d.set))
-      {
-        Object.defineProperty(clone, p, d);
-      }
-      else if(p != 'type')
-      {
-        //console.log(p, clone[p], e[p]);
-        clone[p] = e[p];
-      }
+  for (let p in e) {
+    let d=Object.getOwnPropertyDescriptor(e, p);
+    if (d && (d.get || d.set)) {
+      Object.defineProperty(clone, p, d);
+    } else if(p != 'type') {
+      //console.log(p, clone[p], e[p]);
+      clone[p] = e[p];
+    }
   }
   Object.setPrototypeOf(clone, e);
   return clone;
 };
 
-particlesJS.dispatchBodyEvent = function(e)
-{
-    for(const receiver of particlesJS.canvas)
-    {
-        let eCopy = this.cloneEvent(e);
-        eCopy.bodyEvent = true;
-        receiver.dispatchEvent(eCopy);
-    }
+particlesJS.dispatchBodyEvent = function(e) {
+  for(const receiver of particlesJS.canvas) {
+    let eCopy = this.cloneEvent(e);
+    eCopy.bodyEvent = true;
+    receiver.dispatchEvent(eCopy);
+  }
 };
 
 particlesJS.build = function(tag_id, params, canvas_id = 'particles-js-canvas-el') {
