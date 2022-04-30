@@ -112,3 +112,7 @@ canvas{
 #constellation-particles{
   z-index: 0;
 }
+
+#kill-button{
+  z-index: 100;
+}
