@@ -1,8 +1,7 @@
 import Particles from "../../particles.js";
 
-function destroy()
+function destroy(event)
 {
-    console.log('kill');
     Particles.JS.destroy();
 }
 

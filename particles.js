@@ -1676,7 +1676,7 @@ particlesJS.build = function(tag_id, params, canvas_class_name = 'particles-js-c
 
 particlesJS.destroy = function() {
   for(const engine in window.pJSDom) {
-    engine.pJS.fn.ven.destroypJS();
+    engine.pJS.destroy();
   }
   window.pJSDom = [];
   particlesJS.canvas = [];
