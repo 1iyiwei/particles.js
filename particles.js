@@ -13,8 +13,8 @@ export default Particles;
 const particlesJS = {};
 export {particlesJS as JS};
 
-particlesJS.Engine = function(tag_id, canvas_id, params) {
-  const canvas_el = document.querySelector('#'+tag_id+' > .'+canvas_id) || document.querySelector('input[name="'+tag_id+'"] > .'+canvas_id) || document.getElementsByName(tag_id)[0].getElementsByClassName(canvas_id)[0];
+particlesJS.Engine = function(tag_id, canvas_class_name, params) {
+  const canvas_el = document.querySelector('#'+tag_id+' > .'+canvas_class_name) || document.querySelector('input[name="'+tag_id+'"] > .'+canvas_class_name) || document.getElementsByName(tag_id)[0].getElementsByClassName(canvas_class_name)[0];
 
   /* particles.js variables with default values */
   this.pJS = {
@@ -673,6 +673,8 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
   };
 
   pJS.fn.particlesDraw = function() {
+    // console.log('draw', tag_id, pJS.particles.array.length);
+
     /* clear canvas */
     pJS.canvas.ctx.clearRect(0, 0, pJS.canvas.w, pJS.canvas.h);
 
@@ -1360,12 +1362,12 @@ particlesJS.Engine = function(tag_id, canvas_id, params) {
   };
 
 
+  this.destroy =
   pJS.fn.vendors.destroypJS = function() {
     cancelAnimationFrame(pJS.fn.drawAnimFrame);
     canvas_el.remove();
-    window.pJSDom = null;
+    // window.pJSDom = null;
   };
-
 
   pJS.fn.vendors.drawShape = function(c, startX, startY, sideLength, sideCountNumerator, sideCountDenominator) {
     // By Programming Thomas - https://programmingthomas.wordpress.com/2013/04/03/n-sided-shapes/
@@ -1625,7 +1627,7 @@ particlesJS.dispatchBodyEvent = function(e) {
   }
 };
 
-particlesJS.build = function(tag_id, params, canvas_id = 'particles-js-canvas-el') {
+particlesJS.build = function(tag_id, params, canvas_class_name = 'particles-js-canvas-el') {
   // console.log(params);
 
   /* no string id? so it's object params, and set the id with default id */
@@ -1641,7 +1643,7 @@ particlesJS.build = function(tag_id, params, canvas_id = 'particles-js-canvas-el
 
   /* pJS elements */
   const pJS_tag = document.getElementById(tag_id) || document.getElementsByName(tag_id)[0];
-  const pJS_canvas_class = canvas_id;
+  const pJS_canvas_class = canvas_class_name;
   const exist_canvas = pJS_tag.getElementsByClassName(pJS_canvas_class);
 
   /* remove canvas if exists into the pJS target tag */
@@ -1661,12 +1663,23 @@ particlesJS.build = function(tag_id, params, canvas_id = 'particles-js-canvas-el
 
   /* append canvas */
   const canvas = pJS_tag.appendChild(canvas_el);
+  const engine = new particlesJS.Engine(tag_id, pJS_canvas_class, params);
 
   /* launch particle.js */
   if (canvas != null) {
-    window.pJSDom.push(new particlesJS.Engine(tag_id, pJS_canvas_class, params));
+    window.pJSDom.push(engine);
     particlesJS.canvas.push(canvas);
   }
+
+  return engine;
+};
+
+particlesJS.destroy = function() {
+  for(const engine in window.pJSDom) {
+    engine.pJS.fn.ven.destroypJS();
+  }
+  window.pJSDom = [];
+  particlesJS.canvas = [];
 };
 
 particlesJS.load = function(tag_id, path_config_json, callback) {
