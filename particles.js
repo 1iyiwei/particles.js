@@ -13,7 +13,7 @@ export default Particles;
 const particlesJS = {};
 export {particlesJS as JS};
 
-particlesJS.Engine = function(tag_id, canvas_class_name, params) {
+particlesJS.Engine = function(tag_id, canvas_class_name, params, bodyPoints) {
   const canvas_el = document.querySelector('#'+tag_id+' > .'+canvas_class_name) || document.querySelector('input[name="'+tag_id+'"] > .'+canvas_class_name) || document.getElementsByName(tag_id)[0].getElementsByClassName(canvas_class_name)[0];
 
   /* particles.js variables with default values */
@@ -103,30 +103,6 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params) {
           enable: true,
           mode: 'push',
         },
-        onlefthand: {
-          enable: false,
-          mode: 'swirl',
-        },
-        onrighthand: {
-          enable: false,
-          mode: 'bubble',
-        },
-        onlefteye: {
-          enable: false,
-          mode: 'swirl',
-        },
-        onrighteye: {
-          enable: false,
-          mode: 'bubble',
-        },
-        onforehead: {
-          enable: false,
-          mode: 'blow',
-        },
-        onnose: {
-          enable: false,
-          mode: 'repulse',
-        },
         resize: true,
       },
       modes: {
@@ -173,7 +149,10 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params) {
     tmp: {},
   };
 
-  const bodyPoints = ['lefthand', 'righthand', 'lefteye', 'righteye', 'forehead', 'nose'];
+  // const bodyPoints = ['lefthand', 'righthand', 'lefteye', 'righteye', 'forehead', 'nose'];
+  for(let part of bodyPoints) {
+    this.pJS.interactivity.events['on' + part] = {"enable": false, "mode": "bubble"};
+  }
 
   const pJS = this.pJS;
 
@@ -818,15 +797,18 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params) {
     return enableStatusEvent(status, event) && isInArray(effect, pJS.interactivity.events['on'+event].mode);
   }
 
+  function enableStatusBodyEventEffect(effect) {
+    for(let part of bodyPoints) {
+      if(enableStatusEventEffect(part, part, effect)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   function enableMoveEffect(effect) {
-    const answer =
-    enableStatusEventEffect('mousemove', 'hover', effect)
-    || enableStatusEventEffect('lefthand', 'lefthand', effect)
-    || enableStatusEventEffect('righthand', 'righthand', effect)
-    || enableStatusEventEffect('lefteye', 'lefteye', effect)
-    || enableStatusEventEffect('righteye', 'righteye', effect)
-    || enableStatusEventEffect('forehead', 'forehead', effect)
-    || enableStatusEventEffect('nose', 'nose', effect);
+    const answer = enableStatusEventEffect('mousemove', 'hover', effect) || enableStatusBodyEventEffect(effect);
     return answer;
   }
 
@@ -1627,7 +1609,7 @@ particlesJS.dispatchBodyEvent = function(e) {
   }
 };
 
-particlesJS.build = function(tag_id, params, canvas_class_name = 'particles-js-canvas-el') {
+particlesJS.build = function(tag_id, params, canvas_class_name = 'particles-js-canvas-el', bodyPoints = []) {
   // console.log(params);
 
   /* no string id? so it's object params, and set the id with default id */
@@ -1663,7 +1645,7 @@ particlesJS.build = function(tag_id, params, canvas_class_name = 'particles-js-c
 
   /* append canvas */
   const canvas = pJS_tag.appendChild(canvas_el);
-  const engine = new particlesJS.Engine(tag_id, pJS_canvas_class, params);
+  const engine = new particlesJS.Engine(tag_id, pJS_canvas_class, params, bodyPoints);
 
   /* launch particle.js */
   if (canvas != null) {
