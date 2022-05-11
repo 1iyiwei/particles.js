@@ -957,13 +957,17 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params, bodyPoints) {
     }
   }
 
+  function leaveStatus(input) {
+    return input + 'leave';
+  }
+
   pJS.fn.modes.bubbleParticle = function(p) {
     /* on hover event */
     let status = false;
 
     for(const bodyPoint of bodyPoints) {
-      if (!status && enableStatusEventEffect(bodyPoint, bodyPoint, 'bubble')) {
-        bubbleParticleMove(p, bodyPoint, bodyPoint + 'leave');
+      if (!status && (enableStatusEventEffect(bodyPoint, bodyPoint, 'bubble') || enableStatusEventEffect(leaveStatus(bodyPoint), bodyPoint, 'bubble')  )) {
+        bubbleParticleMove(p, bodyPoint, leaveStatus(bodyPoint));
         status = true;
       }
     }
@@ -971,7 +975,7 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params, bodyPoints) {
     if(status) {
       // nothing else to do, handled above
     } else if (enableEventEffect('hover', 'bubble')) {
-      bubbleParticleMove(p, 'mousemove', 'mouseleave');
+      bubbleParticleMove(p, 'mousemove', leaveStatus('mouse'));
     } else if (enableEventEffect('click', 'bubble')) {
       bubbleParticleClick(p);
     }
@@ -1205,9 +1209,7 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params, bodyPoints) {
             target.pos_y *= pJS.canvas.pxratio;
           }
 
-          const typeTail = (e.bodyEvent && !e.visibility) ? "leave" : "";
-
-          pJS.interactivity.status = type + typeTail;
+          pJS.interactivity.status = (e.bodyEvent && !e.visibility) ? leaveStatus(type) : type;
         }
       );
     };
@@ -1224,10 +1226,10 @@ particlesJS.Engine = function(tag_id, canvas_class_name, params, bodyPoints) {
       addPointerEventListener('mousemove', pJS.interactivity.mouse);
 
       /* el on onmouseleave */
-      pJS.interactivity.el.addEventListener('mouseleave', function(/*e*/){
+      pJS.interactivity.el.addEventListener(leaveStatus('mouse'), function(/*e*/){
         pJS.interactivity.mouse.pos_x = null;
         pJS.interactivity.mouse.pos_y = null;
-        pJS.interactivity.status = 'mouseleave';
+        pJS.interactivity.status = leaveStatus('mouse');
       });
     }
 
